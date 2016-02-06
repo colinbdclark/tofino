@@ -1,0 +1,16 @@
+{
+    "name": "tofino",
+    "productName": "Tofino",
+    "description": "Tofino, a video by Colin Clark",
+    "main": "index.js",
+    "version": "1.0.0",
+    "author": "Colin Clark",
+    "license": "MIT",
+    "repository": "git://github.com/colinbdclark/tofino.git",
+    "bugs": "http://github.com/colinbdclark/tofino/issues",
+    "homepage": "http://github.com/colinbdclark/tofino",
+    "readmeFilename": "README.md",
+    "dependencies": {
+        "aconite": "0.3.1"
+    }
+}

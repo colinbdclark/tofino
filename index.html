@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Tofino</title>
+
+        <link rel="stylesheet" href="node_modules/aconite/src/ui/css/stage.css" type="text/css" />
+        <link rel="stylesheet" href="node_modules/aconite/src/ui/css/playButton.css" type="text/css" />
+
+        <script src="node_modules/aconite/dist/aconite-all.js"></script>
+        <script src="node_modules/aconite/node_modules/flocking/src/ugens/debugging.js"></script>
+
+        <script src="node_modules/aconite/src/ui/js/playButton.js"></script>
+
+        <script src="js/tofino.js"></script>
+
+    </head>
+    <body>
+        <div class="aconite-video-container">
+            <img class="aconite-animator-play" src="node_modules/aconite/src/ui/images/play_overlay.png"></img>
+            <canvas class="aconite-animator-canvas" width="1920" height="1080" />
+        </div>
+
+        <script>
+            window.tofino = colin.tofino(".aconite-video-container");
+        </script>
+    </body>
+</html>
