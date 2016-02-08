@@ -10,7 +10,13 @@
             "aconite.videoSequenceCompositor"
         ],
 
-        uniformModelMap: {},
+        model: {
+            layerBlend: "{blendModulator}.model.value"
+        },
+
+        uniformModelMap: {
+            layerBlend: "layerBlend"
+        },
 
         components: {
             glRenderer: {
@@ -33,6 +39,10 @@
 
             speedModulator: {
                 type: "colin.tofino.videoSpeedModulator"
+            },
+
+            blendModulator: {
+                type: "colin.tofino.videoBlendModulator"
             }
         }
     });
@@ -46,7 +56,12 @@
             vertex: "node_modules/aconite/src/shaders/stageVertexShader.vert"
         },
 
-        uniforms: {}
+        uniforms: {
+            layerBlend: {
+                type: "f",
+                value: 0
+            }
+        }
     });
 
 
@@ -55,8 +70,7 @@
 
         clip: {
             url: "videos/tofino-h264-web.m4v",
-            // inTime: "00:42:09",
-            inTime: "00:00:00",
+            inTime: "00:08:30",
             outTime: "01:18:50"
         },
 
@@ -95,19 +109,17 @@
         fps: 60,
 
         synthDef: {
-            ugen:"flock.ugen.print",
-            source: {
-                ugen: "flock.ugen.triOsc",
-                phase: -(Math.PI / 2),
-                freq: {
-                    ugen: "flock.ugen.line",
-                    start: 1/60,
-                    end: 1/600,
-                    duration: 5 * 60
-                },
-                mul: 0.5,
-                add: 1
-            }
+            ugen: "flock.ugen.triOsc",
+            phase: -(Math.PI / 2),
+            freq: 1/600,
+            // freq: {
+            //     ugen: "flock.ugen.line",
+            //     start: 1/30,
+            //     end: 1/600,
+            //     duration: 5 * 60
+            // },
+            mul: 0.5,
+            add: 1
         },
 
         components: {
@@ -116,13 +128,48 @@
         },
 
         listeners: {
-            "{clock}.events.onTick": "colin.tofino.videoSpeedModulator.modulateSpeed({that})"
+            "{clock}.events.onTick": [
+                "colin.tofino.videoSpeedModulator.modulateSpeed({that})"
+            ]
         }
     });
 
+    // TODO: Modelize this.
     colin.tofino.videoSpeedModulator.modulateSpeed = function (that) {
         var val = that.value();
         that.bottomVideo.element.playbackRate = val;
     };
 
+    fluid.defaults("colin.tofino.videoBlendModulator", {
+        gradeNames: ["flock.synth.frameRate", "flock.modelSynth"],
+
+        fps: 60,
+
+        model: {
+            value: 0.5
+        },
+
+        synthDef: {
+            id: "osc",
+            ugen: "flock.ugen.triOsc",
+            freq: 1/30,
+            // freq: {
+            //     ugen: "flock.ugen.lfNoise",
+            //     options: {
+            //         interpolation: "linear"
+            //     },
+            //     freq: 1/20,
+            //     mul: 1/150,
+            //     add: 1/150 + 1/60
+            // },
+            mul: 0.5,
+            add: 0.5
+        },
+
+        listeners: {
+            "{clock}.events.onTick": [
+                "{videoBlendModulator}.value()"
+            ]
+        }
+    });
 }());
