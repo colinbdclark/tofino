@@ -10,6 +10,8 @@
             "aconite.videoSequenceCompositor"
         ],
 
+        fps: 24,
+
         model: {
             layerBlend: "{blendModulator}.model.value"
         },
@@ -19,6 +21,12 @@
         },
 
         components: {
+            clock: {
+                options: {
+                    freq: "{tofino}.options.fps"
+                }
+            },
+
             glRenderer: {
                 type: "colin.tofino.glRenderer"
             },
@@ -69,9 +77,9 @@
         gradeNames: "aconite.clipSequencer.static",
 
         clip: {
-            url: "videos/tofino-h264-web.m4v",
-            inTime: "00:08:30",
-            outTime: "01:18:50"
+            url: "videos/tofino-h264-web-short-high-quality.mp4",
+            inTime: "00:00:00",
+            outTime: "00:28:36"
         },
 
         model: {
@@ -106,18 +114,12 @@
     fluid.defaults("colin.tofino.videoSpeedModulator", {
         gradeNames: "flock.synth.frameRate",
 
-        fps: 60,
+        fps: "{tofino}.options.fps",
 
         synthDef: {
             ugen: "flock.ugen.triOsc",
             phase: -(Math.PI / 2),
-            freq: 1/600,
-            // freq: {
-            //     ugen: "flock.ugen.line",
-            //     start: 1/30,
-            //     end: 1/600,
-            //     duration: 5 * 60
-            // },
+            freq: 1/360,
             mul: 0.5,
             add: 1
         },
@@ -143,7 +145,7 @@
     fluid.defaults("colin.tofino.videoBlendModulator", {
         gradeNames: ["flock.synth.frameRate", "flock.modelSynth"],
 
-        fps: 60,
+        fps: "{tofino}.options.fps",
 
         model: {
             value: 0.5
@@ -162,8 +164,8 @@
             //     mul: 1/150,
             //     add: 1/150 + 1/60
             // },
-            mul: 0.5,
-            add: 0.5
+            mul: 0.40,
+            add: 0.50
         },
 
         listeners: {

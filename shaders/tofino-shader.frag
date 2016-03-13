@@ -22,10 +22,12 @@ void main(void) {
     vec4 topFrag = texture2D(topSampler, coords);
     vec4 bottomFrag = texture2D(bottomSampler, coords);
 
+    gl_FragColor = mix(topFrag, bottomFrag, layerBlend);
+
     // Overlay compositing:
-    float topBlend = layerBlend;
-    float bottomBlend = 1.0 - layerBlend;
-    gl_FragColor = (topFrag * topBlend) + (bottomFrag * bottomBlend);
+    // float topBlend = layerBlend;
+    // float bottomBlend = 1.0 - layerBlend;
+    // gl_FragColor = (topFrag * topBlend) + (bottomFrag * bottomBlend);
 
     // Difference compositing in full colour.
     // It looks quite good.

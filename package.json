@@ -11,8 +11,8 @@
     "homepage": "http://github.com/colinbdclark/tofino",
     "readmeFilename": "README.md",
     "dependencies": {
-        "bergson": "0.11.1",
-        "flocking": "colinbdclark/Flocking#eb65c4ca552dde61a948dc99892181cf4ba2f2b6",
-        "aconite": "0.3.1"
+        "bergson": "0.12.1",
+        "flocking": "colinbdclark/Flocking#b3e07384cc2561ba9d57bf7ff299b2242aec3d74",
+        "aconite": "0.4.2"
     }
 }
