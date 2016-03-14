@@ -13,11 +13,13 @@
         fps: 24,
 
         model: {
-            layerBlend: "{blendModulator}.model.value"
+            layerBlend: "{blendModulator}.model.value",
+            differenceBlend: "{differenceModulator}.model.value"
         },
 
         uniformModelMap: {
-            layerBlend: "layerBlend"
+            layerBlend: "layerBlend",
+            differenceBlend: "differenceBlend"
         },
 
         components: {
@@ -51,6 +53,10 @@
 
             blendModulator: {
                 type: "colin.tofino.videoBlendModulator"
+            },
+
+            differenceModulator: {
+                type: "colin.tofino.videoDifferenceModulator"
             }
         }
     });
@@ -66,6 +72,11 @@
 
         uniforms: {
             layerBlend: {
+                type: "f",
+                value: 0
+            },
+
+            differenceBlend: {
                 type: "f",
                 value: 0
             }
@@ -117,11 +128,17 @@
         fps: "{tofino}.options.fps",
 
         synthDef: {
-            ugen: "flock.ugen.triOsc",
-            phase: -(Math.PI / 2),
-            freq: 1/360,
-            mul: 0.5,
-            add: 1
+            ugen: "flock.ugen.change",
+            time: 30,
+            crossfade: 15,
+            initial: 1.0,
+            target: {
+                ugen: "flock.ugen.triOsc",
+                phase: -(Math.PI / 2),
+                freq: 1/360,
+                mul: 0.5,
+                add: 1
+            }
         },
 
         components: {
@@ -152,25 +169,83 @@
         },
 
         synthDef: {
-            id: "osc",
-            ugen: "flock.ugen.triOsc",
-            freq: 1/30,
-            mul: 0.5,
-            add: 0.5
-            // freq: {
-            //     ugen: "flock.ugen.lfNoise",
-            //     options: {
-            //         interpolation: "linear"
-            //     },
-            //     freq: 1/20,
-            //     mul: 1/150,
-            //     add: 1/150 + 1/60
-            // }
+            ugen: "flock.ugen.change",
+            time: 30,
+            crossfade: 15,
+            initial: 0.0,
+            target: {
+                id: "osc",
+                ugen: "flock.ugen.triOsc",
+                // freq: 1/30,
+                // freq: {
+                //     ugen: "flock.ugen.line",
+                //     start: 1/30,
+                //     end: 1/60,
+                //     duration: 660
+                // },
+                // freq: {
+                //     ugen: "flock.ugen.lfNoise",
+                //     options: {
+                //         interpolation: "linear"
+                //     },
+                //     freq: 1/30,
+                //     mul: 1/30,
+                //     add: 1/60
+                // },
+                freq: {
+                    ugen: "flock.ugen.triOsc",
+                    freq: 1/30,
+                    mul: 1/30,
+                    add: 1/30
+                },
+                mul: 0.5,
+                add: 0.5
+            }
         },
 
         listeners: {
             "{clock}.events.onTick": [
                 "{videoBlendModulator}.value()"
+            ]
+        }
+    });
+
+    fluid.defaults("colin.tofino.videoDifferenceModulator", {
+        gradeNames: ["flock.modelSynth", "flock.synth.frameRate"],
+
+        fps: "{tofino}.options.fps",
+
+        model: {
+            value: 0
+        },
+
+        // synthDef: {
+        //     id: "line",
+        //     ugen: "flock.ugen.line",
+        //     start: 0.00000001,
+        //     end: 1.0,
+        //     duration: 23 * 60
+        // },
+        // synthDef: {
+        //     id: "env",
+        //     ugen: "flock.ugen.envGen",
+        //     gate: 1.0,
+        //     envelope: {
+        //         levels: [0.0, 0.0, 0.8, 0.2, 1.0],
+        //         times: [600, 600, 120, 30]
+        //     }
+        // },
+
+        synthDef: {
+            ugen: "flock.ugen.triOsc",
+            freq: 1/2,
+            mul: 0.5,
+            add: 0.5
+        },
+
+        listeners: {
+            "{clock}.events.onTick": [
+                "{videoDifferenceModulator}.value()"
             ]
         }
     });
