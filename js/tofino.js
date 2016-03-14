@@ -10,14 +10,16 @@
             "aconite.videoSequenceCompositor"
         ],
 
-        fps: 24,
+        fps: 60,
 
         model: {
-            layerBlend: "{blendModulator}.model.value"
+            layerBlend: 0,
+            diffBlend: 0
         },
 
         uniformModelMap: {
-            layerBlend: "layerBlend"
+            layerBlend: "layerBlend",
+            diffBlend: "diffBlend"
         },
 
         components: {
@@ -51,9 +53,19 @@
 
             blendModulator: {
                 type: "colin.tofino.videoBlendModulator"
+            },
+
+            diffBlendModulator: {
+                type: "colin.tofino.videoDiffBlendModulator"
             }
         }
     });
+
+    colin.tofino.updateUniformModelValue = function (that, tofino, modelPath) {
+        // This wasn't working as a relay! Why not?
+        that.value();
+        fluid.set(tofino.model, modelPath, that.model.value);
+    };
 
 
     fluid.defaults("colin.tofino.glRenderer", {
@@ -67,7 +79,12 @@
         uniforms: {
             layerBlend: {
                 type: "f",
-                value: 0
+                value: 0.0
+            },
+
+            diffBlend: {
+                type: "f",
+                value: 0.0
             }
         }
     });
@@ -77,7 +94,7 @@
         gradeNames: "aconite.clipSequencer.static",
 
         clip: {
-            url: "videos/tofino-h264-web-short-high-quality.mp4",
+            url: "videos/tofino-h264-web-even-shorter-low-quality.m4v",
             inTime: "00:00:00",
             outTime: "00:28:36"
         },
@@ -143,9 +160,20 @@
     };
 
     fluid.defaults("colin.tofino.videoBlendModulator", {
-        gradeNames: ["flock.modelSynth", "flock.synth.frameRate"],
+        gradeNames: ["flock.synth.frameRate"],
 
         fps: "{tofino}.options.fps",
+
+        wavetableSize: 8192,
+
+        members: {
+            wavetable: {
+                expander: {
+                    funcName: "colin.tofino.videoBlendModulator.createWaveform",
+                    args: ["{that}.options.wavetableSize", "{that}.options.wavetableSegments"]
+                }
+            }
+        },
 
         model: {
             value: 0.5
@@ -153,24 +181,116 @@
 
         synthDef: {
             id: "osc",
-            ugen: "flock.ugen.triOsc",
-            freq: 1/30,
-            mul: 0.5,
-            add: 0.5
-            // freq: {
-            //     ugen: "flock.ugen.lfNoise",
-            //     options: {
-            //         interpolation: "linear"
-            //     },
-            //     freq: 1/20,
-            //     mul: 1/150,
-            //     add: 1/150 + 1/60
-            // }
+            ugen: "flock.ugen.osc",
+            inputs: {
+                freq: {
+                    ugen: "flock.ugen.line",
+                    start: 1/15,
+                    end: 1/30,
+                    duration: 18 * 60 + 40
+                },
+                mul: {
+                    ugen: "flock.ugen.line",
+                    start: 0.3,
+                    end: 0.5,
+                    duration: 18 * 60 + 40
+                },
+                add: 0.5,
+                table: "{that}.wavetable"
+            }
         },
 
         listeners: {
             "{clock}.events.onTick": [
-                "{videoBlendModulator}.value()"
+                "colin.tofino.updateUniformModelValue({that}, {tofino}, layerBlend)"
+            ]
+        },
+
+        wavetableSegments: [
+            {
+                type: "constant",
+                start: 0.0,
+                end: 0.0
+            },
+            {
+                type: "linear",
+                start: 0.0,
+                end: 1.0
+            },
+            {
+                type: "constant",
+                start: 1.0,
+                end: 1.0
+            },
+            {
+                type: "linear",
+                start: 1.0,
+                end: 0.0
+            },
+            {
+                type: "constant",
+                start: 0.0,
+                end: 0.0
+            },
+            {
+                type: "linear",
+                start: 0.0,
+                end: -1.0
+            },
+            {
+                type: "constant",
+                start: -1.0,
+                end: -1.0
+            },
+            {
+                type: "linear",
+                start: -1.0,
+                end: 0.0
+            }
+        ]
+    });
+
+    colin.tofino.videoBlendModulator.createWaveform = function (wavetableSize, wavetableSegments) {
+        var numSegSamps = wavetableSize / wavetableSegments.length,
+            buffer = new Float32Array(wavetableSize),
+            startIdx = 0;
+
+        for (var i = 0; i < wavetableSegments.length; i++) {
+            var segmentSpec = wavetableSegments[i],
+                endIdx = startIdx + numSegSamps;
+
+            flock.fillBufferWithLine(segmentSpec.type,
+                buffer, segmentSpec.start, segmentSpec.end, startIdx, endIdx);
+
+            startIdx = endIdx;
+        }
+
+        return buffer;
+    };
+
+
+    fluid.defaults("colin.tofino.videoDiffBlendModulator", {
+        gradeNames: ["flock.synth.frameRate"],
+
+        fps: "{tofino}.options.fps",
+
+        model: {
+            value: 0.0
+        },
+
+        synthDef: {
+            id: "line",
+            ugen: "flock.ugen.xLine",
+            inputs: {
+                start: 0.00000001,
+                end: 1.0,
+                duration: 21 * 60 + 33
+            }
+        },
+
+        listeners: {
+            "{clock}.events.onTick": [
+                "colin.tofino.updateUniformModelValue({that}, {tofino}, diffBlend)"
             ]
         }
     });
