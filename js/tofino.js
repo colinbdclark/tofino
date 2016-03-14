@@ -143,7 +143,7 @@
     };
 
     fluid.defaults("colin.tofino.videoBlendModulator", {
-        gradeNames: ["flock.synth.frameRate", "flock.modelSynth"],
+        gradeNames: ["flock.modelSynth", "flock.synth.frameRate"],
 
         fps: "{tofino}.options.fps",
 
@@ -155,6 +155,8 @@
             id: "osc",
             ugen: "flock.ugen.triOsc",
             freq: 1/30,
+            mul: 0.5,
+            add: 0.5
             // freq: {
             //     ugen: "flock.ugen.lfNoise",
             //     options: {
@@ -163,9 +165,7 @@
             //     freq: 1/20,
             //     mul: 1/150,
             //     add: 1/150 + 1/60
-            // },
-            mul: 0.40,
-            add: 0.50
+            // }
         },
 
         listeners: {
