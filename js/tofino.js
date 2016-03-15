@@ -94,7 +94,7 @@
         gradeNames: "aconite.clipSequencer.static",
 
         clip: {
-            url: "videos/tofino-h264-web-even-shorter-low-quality.m4v",
+            url: "videos/tofino-h264-web.mp4",
             inTime: "00:00:00",
             outTime: "00:28:36"
         },
