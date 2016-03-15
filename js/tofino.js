@@ -184,16 +184,20 @@
             ugen: "flock.ugen.osc",
             inputs: {
                 freq: {
-                    ugen: "flock.ugen.line",
-                    start: 1/15,
-                    end: 1/30,
-                    duration: 18 * 60 + 40
+                    ugen: "flock.ugen.envGen",
+                    gate: 1.0,
+                    envelope: {
+                        levels: [1/15, 1/15, 1/7.5, 1/15, 1/30],
+                        times: [5 * 60, 8 * 60, 5 * 60, 60]
+                    }
                 },
                 mul: {
-                    ugen: "flock.ugen.line",
-                    start: 0.3,
-                    end: 0.5,
-                    duration: 18 * 60 + 40
+                    ugen: "flock.ugen.envGen",
+                    gate: 1.0,
+                    envelope: {
+                        levels: [0.3, 0.3, 0.2, 0.3, 0.5],
+                        times: [7 * 60, 5 * 60, 4 * 60, 3 * 60 + 30]
+                    }
                 },
                 add: 0.5,
                 table: "{that}.wavetable"
@@ -284,7 +288,7 @@
             inputs: {
                 start: 0.00000001,
                 end: 1.0,
-                duration: 21 * 60 + 33
+                duration: 17 * 60 + 10
             }
         },
 
