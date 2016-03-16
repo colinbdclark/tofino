@@ -6,11 +6,11 @@
     fluid.defaults("colin.tofino", {
         gradeNames: [
             "aconite.animator.playable",
-            "aconite.animator.debugging",
+            // "aconite.animator.debugging",
             "aconite.videoSequenceCompositor"
         ],
 
-        fps: 60,
+        fps: 24,
 
         model: {
             layerBlend: 0,
@@ -35,7 +35,14 @@
 
             playButton: {
                 options: {
-                    playDelay: 2
+                    playDelay: 15
+                }
+            },
+
+            pip: {
+                type: "aconite.pip",
+                options: {
+                    pipOnFrame: 24 * 10,
                 }
             },
 
