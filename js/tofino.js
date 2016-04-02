@@ -85,13 +85,13 @@
 
         uniforms: {
             layerBlend: {
-                type: "f",
-                value: 0.0
+                type: "1f",
+                values: 0.0
             },
 
             diffBlend: {
-                type: "f",
-                value: 0.0
+                type: "1f",
+                values: 0.0
             }
         }
     });
